@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hang-Ten: The Surfer's Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(to bottom, #87CEEB 0%, #f3e5ab 100%);
+            min-height: 100vh;
+        }
+        h1 { font-family: 'Fredoka One', cursive; }
+        .key-btn {
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .key-btn:active { transform: scale(0.9); }
+        .puppet-part {
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+        .puppet-part.visible {
+            opacity: 1;
+        }
+        .word-letter {
+            border-bottom: 4px solid #1e3a8a;
+            min-width: 2rem;
+            display: inline-block;
+            text-align: center;
+            margin: 0 0.25rem;
+            font-weight: 800;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-3xl mx-auto bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-10">
+        <header class="text-center mb-6">
+            <h1 class="text-4xl md:text-5xl text-blue-600 mb-2">HANG-TEN</h1>
+            <p class="text-blue-800 font-medium">Don't wipe out! You have <span id="lives-count" class="font-bold text-orange-600">10</span> tries left.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <!-- Game Visuals -->
+            <div class="bg-sky-100 rounded-2xl p-4 flex justify-center items-center shadow-inner relative overflow-hidden h-64 md:h-80">
+                <!-- SVG Puppet -->
+                <svg width="200" height="250" viewBox="0 0 200 250" class="drop-shadow-lg">
+                    <!-- 1. The Sand/Base -->
+                    <path id="part-1" class="puppet-part fill-orange-300" d="M20 230 Q 100 210 180 230 L 180 250 L 20 250 Z" />
+                    <!-- 2. The Main Pole -->
+                    <rect id="part-2" class="puppet-part fill-amber-800" x="40" y="20" width="10" height="210" />
+                    <!-- 3. The Top Beam -->
+                    <rect id="part-3" class="puppet-part fill-amber-800" x="40" y="20" width="100" height="10" />
+                    <!-- 4. The Leash/Rope -->
+                    <line id="part-4" class="puppet-part stroke-orange-500" x1="130" y1="30" x2="130" y2="70" stroke-width="4" />
+                    <!-- 5. Head -->
+                    <circle id="part-5" class="puppet-part fill-orange-200 stroke-orange-800" cx="130" cy="90" r="20" stroke-width="2" />
+                    <!-- 6. Body -->
+                    <rect id="part-6" class="puppet-part fill-blue-500" x="120" y="110" width="20" height="50" rx="5" />
+                    <!-- 7. Left Arm -->
+                    <line id="part-7" class="puppet-part stroke-orange-200" x1="120" y1="120" x2="100" y2="140" stroke-width="6" stroke-linecap="round" />
+                    <!-- 8. Right Arm -->
+                    <line id="part-8" class="puppet-part stroke-orange-200" x1="140" y1="120" x2="160" y2="140" stroke-width="6" stroke-linecap="round" />
+                    <!-- 9. Left Leg -->
+                    <line id="part-9" class="puppet-part stroke-orange-200" x1="125" y1="160" x2="115" y2="190" stroke-width="6" stroke-linecap="round" />
+                    <!-- 10. Right Leg + Surfboard -->
+                    <g id="part-10" class="puppet-part">
+                        <line class="stroke-orange-200" x1="135" y1="160" x2="145" y2="190" stroke-width="6" stroke-linecap="round" />
+                        <ellipse cx="130" cy="205" rx="50" ry="10" class="fill-yellow-400 stroke-yellow-600" />
+                    </g>
+                </svg>
+                
+                <!-- Waves Decoration -->
+                <div class="absolute bottom-0 left-0 right-0 h-8 opacity-30 pointer-events-none">
+                    <svg viewBox="0 0 120 28" class="w-full h-full preserve-aspect-ratio">
+                        <path d="M0 15 Q 30 0 60 15 T 120 15 V 30 H 0 Z" fill="#0ea5e9"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Game Interaction -->
+            <div class="flex flex-col gap-6">
+                <!-- Word Display -->
+                <div id="word-container" class="flex flex-wrap justify-center gap-2 py-4">
+                    <!-- Letters go here -->
+                </div>
+
+                <!-- Hint -->
+                <div class="text-center">
+                    <span class="bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-sm font-semibold uppercase tracking-wider">
+                        Category: <span id="category-name">Summer Vibes</span>
+                    </span>
+                </div>
+
+                <!-- Virtual Keyboard -->
+                <div id="keyboard" class="grid grid-cols-7 gap-2">
+                    <!-- Buttons go here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="mt-8 text-center">
+            <button id="reset-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all transform hover:scale-105">
+                New Session
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal for End Game -->
+    <div id="status-modal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <div id="modal-icon" class="text-6xl mb-4">🏄‍♂️</div>
+            <h2 id="modal-title" class="text-3xl font-bold text-blue-600 mb-2">You Won!</h2>
+            <p id="modal-message" class="text-gray-600 mb-6">Great job catching those waves!</p>
+            <p id="modal-reveal" class="text-sm text-gray-400 mb-6 hidden">The word was: <span id="correct-word" class="font-bold text-blue-800"></span></p>
+            <button id="modal-close" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors">
+                Play Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const wordList = [
+            { word: "SURFBOARD", cat: "Surfing" },
+            { word: "WAVELENGTH", cat: "Science" },
+            { word: "SUNSCREEN", cat: "Summer" },
+            { word: "SANDCASTLE", cat: "Beach" },
+            { word: "BOARDWALK", cat: "Beach" },
+            { word: "TSUNAMI", cat: "Ocean" },
+            { word: "REEFBREAK", cat: "Surfing" },
+            { word: "PADDLEBOARD", cat: "Water Sports" },
+            { word: "BUNGALOW", cat: "Travel" },
+            { word: "TURQUOISE", cat: "Colors" },
+            { word: "COCONUT", cat: "Tropical" },
+            { word: "PARADISE", cat: "Vibe" },
+            { word: "JELLYFISH", cat: "Sea Life" },
+            { word: "HAMMOCK", cat: "Relaxation" },
+            { word: "SHORELINE", cat: "Geography" }
+        ];
+
+        let selectedWord = "";
+        let guessedLetters = [];
+        let mistakes = 0;
+        const maxMistakes = 10;
+
+        const wordContainer = document.getElementById('word-container');
+        const keyboard = document.getElementById('keyboard');
+        const livesDisplay = document.getElementById('lives-count');
+        const categoryDisplay = document.getElementById('category-name');
+        const resetBtn = document.getElementById('reset-btn');
+        const modal = document.getElementById('status-modal');
+        const modalClose = document.getElementById('modal-close');
+
+        function initGame() {
+            // Reset state
+            const randomObj = wordList[Math.floor(Math.random() * wordList.length)];
+            selectedWord = randomObj.word.toUpperCase();
+            categoryDisplay.textContent = randomObj.cat;
+            guessedLetters = [];
+            mistakes = 0;
+            
+            // Update UI
+            updatePuppet();
+            updateWordDisplay();
+            updateKeyboard();
+            livesDisplay.textContent = maxMistakes;
+            modal.classList.add('hidden');
+        }
+
+        function updateWordDisplay() {
+            wordContainer.innerHTML = "";
+            selectedWord.split("").forEach(letter => {
+                const span = document.createElement('span');
+                span.className = "word-letter";
+                span.textContent = guessedLetters.includes(letter) ? letter : "";
+                wordContainer.appendChild(span);
+            });
+        }
+
+        function updateKeyboard() {
+            keyboard.innerHTML = "";
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+            letters.forEach(char => {
+                const btn = document.createElement('button');
+                btn.textContent = char;
+                btn.className = "key-btn bg-white border-2 border-blue-200 text-blue-700 font-bold py-2 rounded-lg hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed text-sm md:text-base";
+                
+                if (guessedLetters.includes(char)) {
+                    btn.disabled = true;
+                    const isCorrect = selectedWord.includes(char);
+                    btn.classList.add(isCorrect ? "bg-green-100" : "bg-red-100");
+                    btn.classList.add(isCorrect ? "border-green-400" : "border-red-400");
+                }
+
+                btn.addEventListener('click', () => handleGuess(char));
+                keyboard.appendChild(btn);
+            });
+        }
+
+        function updatePuppet() {
+            // Hide all parts first
+            for (let i = 1; i <= maxMistakes; i++) {
+                const part = document.getElementById(`part-${i}`);
+                if (part) part.classList.remove('visible');
+            }
+            // Show up to current mistakes
+            for (let i = 1; i <= mistakes; i++) {
+                const part = document.getElementById(`part-${i}`);
+                if (part) part.classList.add('visible');
+            }
+        }
+
+        function handleGuess(letter) {
+            if (guessedLetters.includes(letter) || mistakes >= maxMistakes) return;
+
+            guessedLetters.push(letter);
+
+            if (!selectedWord.includes(letter)) {
+                mistakes++;
+                updatePuppet();
+            }
+
+            livesDisplay.textContent = maxMistakes - mistakes;
+            updateWordDisplay();
+            updateKeyboard();
+            checkGameStatus();
+        }
+
+        function checkGameStatus() {
+            const isWon = selectedWord.split("").every(letter => guessedLetters.includes(letter));
+            const isLost = mistakes >= maxMistakes;
+
+            if (isWon || isLost) {
+                setTimeout(() => showModal(isWon), 500);
+            }
+        }
+
+        function showModal(won) {
+            const title = document.getElementById('modal-title');
+            const msg = document.getElementById('modal-message');
+            const icon = document.getElementById('modal-icon');
+            const reveal = document.getElementById('modal-reveal');
+            const correctWordSpan = document.getElementById('correct-word');
+
+            if (won) {
+                icon.textContent = "🏄‍♂️";
+                title.textContent = "Hang Ten!";
+                title.className = "text-3xl font-bold text-green-600 mb-2";
+                msg.textContent = "You mastered the waves and guessed the word!";
+                reveal.classList.add('hidden');
+            } else {
+                icon.textContent = "🦈";
+                title.textContent = "Wipe Out!";
+                title.className = "text-3xl font-bold text-red-600 mb-2";
+                msg.textContent = "The shark got your board this time.";
+                reveal.classList.remove('hidden');
+                correctWordSpan.textContent = selectedWord;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        // Event Listeners
+        resetBtn.addEventListener('click', initGame);
+        modalClose.addEventListener('click', initGame);
+
+        // Keyboard Support
+        window.addEventListener('keydown', (e) => {
+            const char = e.key.toUpperCase();
+            if (/^[A-Z]$/.test(char) && !modal.classList.contains('hidden') === false) {
+                handleGuess(char);
+            }
+        });
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>
