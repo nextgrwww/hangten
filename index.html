@@ -37,9 +37,9 @@
         }
     </style>
 </head>
-<body class="p-4 md:p-8 flex flex-col items-center">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-3xl w-full mx-auto bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-10">
+    <div class="max-w-3xl mx-auto bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-10">
         <header class="text-center mb-6">
             <h1 class="text-4xl md:text-5xl text-blue-600 mb-2">HANG-TEN</h1>
             <p class="text-blue-800 font-medium">Don't wipe out! You have <span id="lives-count" class="font-bold text-orange-600">10</span> tries left.</p>
@@ -93,7 +93,7 @@
                 <!-- Hint -->
                 <div class="text-center">
                     <span class="bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-sm font-semibold uppercase tracking-wider">
-                        Category: <span id="category-name">Summer Vibes</span>
+                        Hint: <span id="category-name">Summer Vibes</span>
                     </span>
                 </div>
 
@@ -105,21 +105,16 @@
         </div>
 
         <!-- Reset Button -->
-        <div class="mt-8 text-center border-b border-gray-100 pb-6">
+        <div class="mt-8 text-center">
             <button id="reset-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all transform hover:scale-105">
                 New Session
             </button>
         </div>
-
-        <!-- Footnote -->
-        <footer class="mt-4 text-center">
-            <p class="text-xs text-blue-800/60 font-medium tracking-wide">Created By Tekken. All rights reserved</p>
-        </footer>
     </div>
 
     <!-- Modal for End Game -->
     <div id="status-modal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-8 max-sm w-full text-center shadow-2xl">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
             <div id="modal-icon" class="text-6xl mb-4">🏄‍♂️</div>
             <h2 id="modal-title" class="text-3xl font-bold text-blue-600 mb-2">You Won!</h2>
             <p id="modal-message" class="text-gray-600 mb-6">Great job catching those waves!</p>
@@ -131,6 +126,7 @@
     </div>
 
     <script>
+    /*
         const wordList = [
             { word: "SURFBOARD", cat: "Surfing" },
             { word: "WAVELENGTH", cat: "Science" },
@@ -148,6 +144,61 @@
             { word: "HAMMOCK", cat: "Relaxation" },
             { word: "SHORELINE", cat: "Geography" }
         ];
+    */
+        
+        const wordList = [
+            { word: "bowl", cat: "Pet Care" }, 
+            { word: "pillow", cat: "Bedroom Item" }, 
+            { word: "soap", cat: "Bathroom Item" }, 
+            { word: "spoon", cat: "Kitchen Tool" }, 
+            { word: "crayon", cat: "School Supply" }, 
+            { word: "swing", cat: "Playground Item" }, 
+            { word: "socks", cat: "Clothing Item" }, 
+            { word: "apple", cat: "Fruit Basket" }, 
+            { word: "cow", cat: "Farm Animal" }, 
+            { word: "rainbow", cat: "Weather Sight" }, 
+            { word: "bus", cat: "Vehicle" }, 
+            { word: "ball", cat: "Toy Box" }, 
+            { word: "juice", cat: "Picnic Item" }, 
+            { word: "sunscreen", cat: "Beach Item" }, 
+            { word: "drum", cat: "Music Instrument" }, 
+            { word: "badge", cat: "School Mystery" }, 
+            { word: "compass", cat: "Pirate Adventure" }, 
+            { word: "recipe", cat: "Kitchen Mystery" }, 
+            { word: "kennel", cat: "Animal Rescue" }, 
+            { word: "ladder", cat: "Fire Station" }, 
+            { word: "rocket", cat: "Space Mission" }, 
+            { word: "pinecone", cat: "Forest Discovery" }, 
+            { word: "drawer", cat: "Home Secret" }, 
+            { word: "hammer", cat: "Builder Tools" }, 
+            { word: "trolley", cat: "Grocery Store" }, 
+            { word: "wand", cat: "Wizard Tools" }, 
+            { word: "plaster", cat: "First Aid Box" }, 
+            { word: "footprint", cat: "Detective Evidence" }, 
+            { word: "cake", cat: "Birthday Party" }, 
+            { word: "fossil", cat: "Dinosaur Dig" }, 
+            { word: "evidence", cat: "Police Case" }, 
+            { word: "padlock", cat: "Puzzle Challenge" }, 
+            { word: "coin", cat: "Adventure Find" }, 
+            { word: "stopwatch", cat: "Time Measurement" }, 
+            { word: "microscope", cat: "Science Lab" }, 
+            { word: "crater", cat: "Space Discovery" }, 
+            { word: "key", cat: "School Locker" }, 
+            { word: "game", cat: "Win or Lose" }, 
+            { word: "map", cat: "Treasure Guide" }, 
+            { word: "decoder", cat: "Code Breaker" }, 
+            { word: "books", cat: "Library" }, 
+            { word: "cooking", cat: "Kitchen Skill" }, 
+            { word: "thermometer", cat: "Weather Tool" }, 
+            { word: "backpack", cat: "Travelling" }, 
+            { word: "toolbox", cat: "Home Repair" }, 
+            { word: "spellbook", cat: "Magic Artifact" }, 
+            { word: "tree", cat: "Forest" }, 
+            { word: "camera", cat: "Photography Item" }, 
+            { word: "tunnel", cat: "Secret Passage" }, 
+            { word: "maze", cat: "Puzzle Object" }
+        ];
+
 
         let selectedWord = "";
         let guessedLetters = [];
