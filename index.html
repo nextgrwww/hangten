@@ -37,9 +37,9 @@
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-8 flex flex-col items-center">
 
-    <div class="max-w-3xl mx-auto bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-10">
+    <div class="max-w-3xl w-full mx-auto bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-10">
         <header class="text-center mb-6">
             <h1 class="text-4xl md:text-5xl text-blue-600 mb-2">HANG-TEN</h1>
             <p class="text-blue-800 font-medium">Don't wipe out! You have <span id="lives-count" class="font-bold text-orange-600">10</span> tries left.</p>
@@ -105,11 +105,16 @@
         </div>
 
         <!-- Reset Button -->
-        <div class="mt-8 text-center">
+        <div class="mt-8 text-center border-b border-gray-100 pb-6">
             <button id="reset-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all transform hover:scale-105">
                 New Session
             </button>
         </div>
+
+        <!-- Footnote -->
+        <footer class="mt-4 text-center">
+            <p class="text-xs text-blue-800/60 font-medium tracking-wide">Created By Hammad Ahmed. All rights reserved</p>
+        </footer>
     </div>
 
     <!-- Modal for End Game -->
@@ -126,26 +131,6 @@
     </div>
 
     <script>
-    /*
-        const wordList = [
-            { word: "SURFBOARD", cat: "Surfing" },
-            { word: "WAVELENGTH", cat: "Science" },
-            { word: "SUNSCREEN", cat: "Summer" },
-            { word: "SANDCASTLE", cat: "Beach" },
-            { word: "BOARDWALK", cat: "Beach" },
-            { word: "TSUNAMI", cat: "Ocean" },
-            { word: "REEFBREAK", cat: "Surfing" },
-            { word: "PADDLEBOARD", cat: "Water Sports" },
-            { word: "BUNGALOW", cat: "Travel" },
-            { word: "TURQUOISE", cat: "Colors" },
-            { word: "COCONUT", cat: "Tropical" },
-            { word: "PARADISE", cat: "Vibe" },
-            { word: "JELLYFISH", cat: "Sea Life" },
-            { word: "HAMMOCK", cat: "Relaxation" },
-            { word: "SHORELINE", cat: "Geography" }
-        ];
-    */
-        
         const wordList = [
             { word: "bowl", cat: "Pet Care" }, 
             { word: "pillow", cat: "Bedroom Item" }, 
@@ -198,7 +183,6 @@
             { word: "tunnel", cat: "Secret Passage" }, 
             { word: "maze", cat: "Puzzle Object" }
         ];
-
 
         let selectedWord = "";
         let guessedLetters = [];
